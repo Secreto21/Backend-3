@@ -2,10 +2,17 @@ import { Router } from 'express';
 import User from '../models/User.js';
 
 const router = Router();
-
 /**
- * GET /api/users
- * Obtiene todos los usuarios de la base de datos
+ * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Obtener todos los usuarios
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios obtenida correctamente
+ *       500:
+ *         description: Error interno del servidor
  */
 router.get('/', async (req, res) => {
     try {
@@ -26,8 +33,24 @@ router.get('/', async (req, res) => {
 });
 
 /**
- * GET /api/users/:id
- * Obtiene un usuario específico por ID
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     summary: Obtener un usuario por ID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Usuario encontrado
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error interno del servidor
  */
 router.get('/:id', async (req, res) => {
     try {
@@ -55,8 +78,39 @@ router.get('/:id', async (req, res) => {
 });
 
 /**
- * POST /api/users
- * Crea un nuevo usuario
+ * @swagger
+ * /api/users:
+ *   post:
+ *     summary: Crear un nuevo usuario
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - first_name
+ *               - last_name
+ *               - email
+ *               - password
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *               last_name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *                 enum: [user, admin]
+ *     responses:
+ *       201:
+ *         description: Usuario creado correctamente
+ *       500:
+ *         description: Error interno del servidor
  */
 router.post('/', async (req, res) => {
     try {
@@ -79,8 +133,24 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * DELETE /api/users/:id
- * Elimina un usuario por ID
+ * @swagger
+ * /api/users/{id}:
+ *   delete:
+ *     summary: Eliminar un usuario por ID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Usuario eliminado correctamente
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error interno del servidor
  */
 router.delete('/:id', async (req, res) => {
     try {

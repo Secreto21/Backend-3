@@ -1,12 +1,15 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 import { connectDB, setupDBEvents } from './src/utils/database.js';
 
 // Importar routers
 import mocksRouter from './src/routes/mocks.router.js';
 import usersRouter from './src/routes/users.router.js';
 import petsRouter from './src/routes/pets.router.js';
+import adoptionRouter from './src/routes/adoption.router.js';
 
 // Configurar variables de entorno
 dotenv.config();
@@ -25,6 +28,25 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Backend3 API',
+            version: '1.0.0',
+            description: 'Documentación de la API Backend3'
+        },
+        servers: [
+            {
+                url: `http://localhost:${PORT}`
+            }
+        ]
+    },
+    apis: ['./src/routes/*.js']
+};
+
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+
 // Ruta de salud
 app.get('/', (req, res) => {
     res.json({
@@ -34,14 +56,18 @@ app.get('/', (req, res) => {
         endpoints: {
             mocks: '/api/mocks',
             users: '/api/users',
-            pets: '/api/pets'
+            pets: '/api/pets',
+            adoptions: '/api/adoptions',
+            docs: '/api/docs'
         },
         availableRoutes: {
             mockingPets: 'GET /api/mocks/mockingpets',
             mockingUsers: 'GET /api/mocks/mockingusers',
             generateData: 'POST /api/mocks/generateData',
             getUsers: 'GET /api/users',
-            getPets: 'GET /api/pets'
+            getPets: 'GET /api/pets',
+            getAdoptions: 'GET /api/adoptions',
+            swaggerDocs: 'GET /api/docs'
         }
     });
 });
@@ -50,6 +76,8 @@ app.get('/', (req, res) => {
 app.use('/api/mocks', mocksRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/pets', petsRouter);
+app.use('/api/adoptions', adoptionRouter);
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Manejo de rutas no encontradas
 app.use('*', (req, res) => {
@@ -60,7 +88,9 @@ app.use('*', (req, res) => {
             home: '/',
             mocks: '/api/mocks',
             users: '/api/users',
-            pets: '/api/pets'
+            pets: '/api/pets',
+            adoptions: '/api/adoptions',
+            docs: '/api/docs'
         }
     });
 });
@@ -96,6 +126,8 @@ const startServer = async () => {
             console.log('   • POST /api/mocks/generateData     - Generate and insert data');
             console.log('   • GET  /api/users                  - Get all users');
             console.log('   • GET  /api/pets                   - Get all pets');
+            console.log('   • GET  /api/adoptions              - Get all adoptions');
+            console.log('   • GET  /api/docs                   - Swagger UI');
             console.log('');
             console.log('✨ Ready to serve requests!');
         });
@@ -107,6 +139,8 @@ const startServer = async () => {
 };
 
 // Iniciar la aplicación
-startServer();
+if (process.env.NODE_ENV !== 'test') {
+    startServer();
+}
 
 export default app;
